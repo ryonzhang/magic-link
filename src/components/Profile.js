@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router";
 import { magic } from "../magic";
 import Loading from "./Loading";
+import * as ethers from "ethers/lib/ethers";
 
 export default function Profile() {
   const [userMetadata, setUserMetadata] = useState();
@@ -12,7 +13,15 @@ export default function Profile() {
     // If so, we'll retrieve the authenticated user's profile.
     magic.user.isLoggedIn().then(magicIsLoggedIn => {
       if (magicIsLoggedIn) {
-        magic.user.getMetadata().then(setUserMetadata);
+        magic.user.getMetadata().then(userData=>{
+          setUserMetadata(userData)
+          console.log(userData)
+
+          const provider = new ethers.providers.Web3Provider(magic.rpcProvider);
+          const signer = provider.getSigner();
+
+          console.log(signer)
+        });
       } else {
         // If no user is logged in, redirect to `/login`
         history.push("/login");
